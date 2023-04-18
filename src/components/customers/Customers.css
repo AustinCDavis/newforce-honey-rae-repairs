@@ -1,0 +1,16 @@
+.customers {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin-top: 1rem;
+}
+
+.customer {
+    background-color: blanchedalmond;
+    border: 3px dashed rgb(2, 192, 2);
+    border-radius: 1rem;
+    padding: .5rem;
+    color: black;
+    margin: .25rem;
+}
