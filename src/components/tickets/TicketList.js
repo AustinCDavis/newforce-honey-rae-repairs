@@ -1,10 +1,12 @@
-import { useEffect, useReducer, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import "./Tickets.css"
+import { Ticket } from "./Ticket"
 
 
 export const TicketList = ({ searchTermState }) => {
     const [tickets, setTickets] = useState([])
+    const [employees, setEmployees] = useState([])
     const [filteredTickets, setFiltered] = useState([])
     const [emergency, setEmergency] = useState(false)
     const [openOnly, updateOpenOnly] = useState(false)
@@ -13,13 +15,22 @@ export const TicketList = ({ searchTermState }) => {
     const localHoneyUser = localStorage.getItem("honey_user")
     const honeyUserObject = JSON.parse(localHoneyUser)
     
+    const getAllTickets = () => {
+        
+        fetch(`http://localhost:8088/serviceTickets?_embed=employeeTickets`)
+        .then(response => response.json())
+        .then((ticketArray) => {
+            setTickets(ticketArray)
+        })
+    }
+
 useEffect(
     () => {
         //Lowercased to make it not case sensitive
         const searchedTickets = tickets.filter(ticket => ticket.description.toLowerCase().includes(searchTermState.toLowerCase()))
         setFiltered(searchedTickets)
     }, [ searchTermState ]
-)
+    )
 
     useEffect(
         () => {
@@ -31,16 +42,17 @@ useEffect(
             }
         },
         [emergency]
-    )
+        )
     
     useEffect(
         () => {
-            fetch(` http://localhost:8088/serviceTickets`)
-                .then(response => response.json())
-                .then((ticketArray) => {
-                    setTickets(ticketArray)
-                })
-            // console.log("Initial state of tickets", tickets) // View the initial state of tickets
+            getAllTickets()
+
+            fetch(`http://localhost:8088/employees?_expand=user`)
+            .then(r => r.json())
+            .then((employeeArray) => {
+                setEmployees(employeeArray)
+            })
         },
         [] // When this array is empty, you are observing initial component state
     )
@@ -97,12 +109,11 @@ useEffect(
     <article className="tickets">
         {
             filteredTickets.map(
-                (ticket) => {
-                    return <section className="ticket" key={`ticket--${ticket.id}`}>
-                        <header>{ticket.description}</header>
-                        <footer>Emergency: {ticket.emergency ? "🚑" : "no"}</footer>
-                    </section>
-                }
+                (ticket) => <Ticket employees={employees} 
+                    getAllTickets={getAllTickets}
+                    currentUser={honeyUserObject} 
+                    ticketObject={ticket} 
+                    key={`ticket--${ticket.id}`} />
             )
         }
     </article>

@@ -1,52 +1,50 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
 
-export const TicketForm = () => {
-    /*
-        TODO: Add the correct default properties to the
-        initial state object
-    */
-    const [ticket, update] = useState({
-        describe: "",
-        emergency: false
-    })
-    /*
-        TODO: Use the useNavigation() hook so you can redirect
-        the user to the ticket list
-    */
+export const TicketEdit = () => {
+
     const navigate = useNavigate()
+    const {ticketId} = useParams()
+   
+    //initial state for tickets
+    const [ticket, updateTicket] = useState({
+        userId: 0,
+        description: "",
+        emergency: false,
+        dateCompleted: ""
+    })
 
-    const localHoneyUser = localStorage.getItem("honey_user")
-    const honeyUserObject = JSON.parse(localHoneyUser)
-
+    useEffect(() => {
+        fetch(`http://localhost:8088/serviceTickets/${ticketId}`)
+        .then(r => r.json())
+        .then((data) => {
+            updateTicket(data)
+        })
+    }, [ticketId])
+    
     const handleSaveButtonClick = (event) => {
         event.preventDefault()
-
-        // TODO: Create the object to be saved to the API
-        const ticketToSendToAPI = {
-            userId: honeyUserObject.id,
-            description: ticket.description,
-            emergency: ticket.emergency,
-            dateCompleted: ""
-        }
-
-        // TODO: Perform the fetch() to POST the object to the API
-        return fetch (`http://localhost:8088/serviceTickets`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(ticketToSendToAPI)
+    
+        /*
+            TODO: Perform the PUT fetch() call here to update the profile.
+            Navigate user to home page when done.
+        */
+       fetch(`http://localhost:8088/serviceTickets/${ticket.id}`, {
+        method: "PUT",
+        headers: {
+            "content-Type": "application/json"
+        },
+        body: JSON.stringify(ticket)
+       })
+       .then(() => {
+        navigate(`/tickets`)
         })
-            .then(response => response.json())
-            .then(() => {
-                navigate("/tickets")
-            })
+
     }
 
     return (
         <form className="ticketForm">
-            <h2 className="ticketForm__title">New Service Ticket</h2>
+            <h2 className="ticketForm__title">Update Service Ticket</h2>
             <fieldset>
                 <div className="form-group">
                     <label htmlFor="description">Description:</label>
@@ -62,9 +60,9 @@ export const TicketForm = () => {
                             (event) => {
                                 const copy = {...ticket}
                                 copy.description = event.target.value
-                                update(copy)
+                                updateTicket(copy)
                             }
-                        }></textarea>
+                        }>{ticket.description}</textarea>
                 </div>
             </fieldset>
             <fieldset>
@@ -76,7 +74,7 @@ export const TicketForm = () => {
                             (event) => {
                                 const copy = {...ticket}
                                 copy.emergency = event.target.checked
-                                update(copy)
+                                updateTicket(copy)
                             }
                         } />
                 </div>
@@ -84,7 +82,7 @@ export const TicketForm = () => {
             <button 
             onClick={(clickEvent) => handleSaveButtonClick(clickEvent)}
             className="btn btn-primary">
-                Submit Ticket
+                Save Edits
             </button>
         </form>
     )
