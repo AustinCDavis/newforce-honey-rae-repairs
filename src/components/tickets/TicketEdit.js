@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { getTicketById, editTicket } from "../ApiManager"
 
 export const TicketEdit = () => {
 
@@ -15,8 +16,7 @@ export const TicketEdit = () => {
     })
 
     useEffect(() => {
-        fetch(`http://localhost:8088/serviceTickets/${ticketId}`)
-        .then(r => r.json())
+        getTicketById(ticketId)
         .then((data) => {
             updateTicket(data)
         })
@@ -29,13 +29,7 @@ export const TicketEdit = () => {
             TODO: Perform the PUT fetch() call here to update the profile.
             Navigate user to home page when done.
         */
-       fetch(`http://localhost:8088/serviceTickets/${ticket.id}`, {
-        method: "PUT",
-        headers: {
-            "content-Type": "application/json"
-        },
-        body: JSON.stringify(ticket)
-       })
+       return editTicket(ticket.id, ticket)
        .then(() => {
         navigate(`/tickets`)
         })

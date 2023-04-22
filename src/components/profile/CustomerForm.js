@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { getCustomerById, editCustomer } from "../ApiManager"
 
 export const CustomerForm = () => {
   // TODO: Provide initial state for profile
@@ -13,8 +14,7 @@ const honeyUserObject = JSON.parse(localHoneyUser)
 
 // TODO: Get customer profile info from API and update state
 useEffect(() => {
-    fetch(`http://localhost:8088/customers?userId=${honeyUserObject.id}`)
-    .then(r => r.json())
+    getCustomerById(honeyUserObject.id)
     .then((data) => {
         const customerObject = data[0]
         updateprofile(customerObject)
@@ -37,17 +37,7 @@ const handleSaveButtonClick = (event) => {
         TODO: Perform the PUT fetch() call here to update the profile.
         Navigate user to home page when done.
     */
-   fetch(`http://localhost:8088/customers/${profile.id}`, {
-    method: "PUT",
-    headers: {
-        "content-Type": "application/json"
-    },
-    body: JSON.stringify(profile)
-   })
-   .then(r => r.json())
-   .then(() => {
-    
-   })
+   editCustomer(profile)
    .then(() => {
     setFeedback("Profile successfully saved")
     })

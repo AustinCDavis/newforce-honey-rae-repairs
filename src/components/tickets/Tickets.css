@@ -8,4 +8,31 @@
     border: 2px dashed grey;
     padding: 0.6rem;
     margin: 0.5rem 0;
+    line-height: 1.4rem;
+    letter-spacing: .04rem;
+}
+
+.footer{
+    display: flex;
+}
+
+.ticket_finish {
+    margin-left: auto;
+}
+
+.ticket_delete {
+    margin-left: auto;
+    background-color: rgb(247, 55, 55);
+    color: white;
+}
+
+hr {
+    border-top: 2px dashed grey;
+    margin: .6rem;
+}
+
+header {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
 }
